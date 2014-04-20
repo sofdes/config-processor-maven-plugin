@@ -46,7 +46,7 @@ public class DirectoryReader {
      * Read directory creating FileInfo for each file found, include sub-directories.
      */
     public List<FileInfo> readFiles(final String path) throws IOException, InstantiationException, IllegalAccessException {
-        log.info("Scanning directory: " + path);
+        log.debug("Scanning directory: " + path);
         final File directory = new File(path);
         final Collection<File> allFiles = getAllFiles(directory);
         final List<FileInfo> allFilesInfo = new ArrayList<FileInfo>(allFiles.size());

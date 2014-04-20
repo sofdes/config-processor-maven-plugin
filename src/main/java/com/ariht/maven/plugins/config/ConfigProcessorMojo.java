@@ -97,11 +97,12 @@ public class  ConfigProcessorMojo extends AbstractMojo {
         final DirectoryReader directoryReader = new DirectoryReader(getLog());
         final List<FileInfo> filters = directoryReader.readFiles(filtersBasePath);
         final List<FileInfo> templates = directoryReader.readFiles(templatesBasePath);
-        getLog().info("Generating: " + outputBasePath);
+        getLog().debug("Outputs will go into : " + outputBasePath);
         for (final FileInfo filter : filters) {
             for (final FileInfo template : templates) {
                 generateConfig(template, filter, outputBasePath);
             }
+            getLog().info("");
         }
     }
 
