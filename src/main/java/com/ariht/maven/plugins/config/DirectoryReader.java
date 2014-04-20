@@ -26,49 +26,27 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.plugin.logging.Log;
 
 /**
  * Reads directory recursively to put collated file information such as
  * relative paths, name (without extension) and a reference to the {@link File} itself.
  * <p/>
  *
- * Templates in the deploy directory are a special case - they
- * will be written to the <strong>base</strong> directory in order to coordinate 
- * the overall deployment process for an environment e.g.:-
- *
- * <pre>
- *   <strong>.../your_deploy_script.sh</strong>
- *
- *   .../jboss/do_something.cli
- *   .../liquibase/changelog-master.xml
- *   .../liquibase/liquibase.properties
- * </pre>
- *
- *
  * @author <a href="mailto:david.green@softwaredesignstudio.co.uk">David Green</a>
  */
 public class DirectoryReader {
 
-    private final String deployTemplatesDirectory;
-    private final boolean isTemplatesDirectory;
+    final Log log;
 
-    public DirectoryReader() {
-        this(null, false);
+    public DirectoryReader(final Log log) {
+        this.log = log;
     }
-
-    public DirectoryReader(final String deployTemplatesDirectory, final boolean isTemplatesDirectory) {
-        if (StringUtils.isBlank(deployTemplatesDirectory)) {
-            this.deployTemplatesDirectory = null;
-        } else {            
-            this.deployTemplatesDirectory = FilenameUtils.normalize("/" + FilenameUtils.separatorsToUnix(deployTemplatesDirectory) + "/");
-        }
-        this.isTemplatesDirectory = isTemplatesDirectory;
-    }
-
     /**
      * Read directory creating FileInfo for each file found, include sub-directories.
      */
     public List<FileInfo> readFiles(final String path) throws IOException, InstantiationException, IllegalAccessException {
+        log.info("Scanning directory: " + path);
         final File directory = new File(path);
         final Collection<File> allFiles = getAllFiles(directory);
         final List<FileInfo> allFilesInfo = new ArrayList<FileInfo>(allFiles.size());
@@ -82,8 +60,6 @@ public class DirectoryReader {
 
             //fileInfo.setBaseDirectory(canonicalBaseDirectory);
             fileInfo.setRelativeSubDirectory(subDirectory);
-            final boolean isDeployDirectory = isDeployDirectory(subDirectory);
-            fileInfo.setDeployDirectory(isDeployDirectory);
             allFilesInfo.add(fileInfo);
         }
         return allFilesInfo;
@@ -97,13 +73,13 @@ public class DirectoryReader {
         final Collection allFiles = FileUtils.listFiles(directory, TrueFileFilter.TRUE, DirectoryFileFilter.DIRECTORY);
         final Collection<File> files = new ArrayList<File>(allFiles.size()); 
         for (final Object f : allFiles) {
+            if (f == null) {
+                continue;
+            }
+            log.debug("Adding file: " + f.toString());
             files.add((File) f);
         }
         return files;
-    }
-
-    private boolean isDeployDirectory(final String subDirectory) {
-        return isTemplatesDirectory && StringUtils.equals(subDirectory, deployTemplatesDirectory);
     }
 
 }

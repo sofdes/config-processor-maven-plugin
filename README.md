@@ -9,7 +9,7 @@ For example the following inputs:
 /src/main/config/filter/dev.filter
 /src/main/config/filter/uat.filter
 /src/main/config/filter/prod.filter
-/src/main/config/template/deploy/ci_deploy.sh
+/src/main/config/template/ci_deploy.sh
 /src/main/config/template/properties/db_connection_properties.sh
 /src/main/config/template/properties/webapp_properties.sh
 ```

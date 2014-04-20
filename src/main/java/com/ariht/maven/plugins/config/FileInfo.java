@@ -32,7 +32,6 @@ public class FileInfo {
     private final File file;
     private final String nameWithoutExtension;
     private String relativeSubDirectory;
-    private boolean isDeployDirectory = false;
 
     public FileInfo(final File file) {
         this.file = file;
@@ -53,14 +52,6 @@ public class FileInfo {
 
     public File getFile() {
         return file;
-    }
-
-    public boolean isDeployDirectory() {
-        return isDeployDirectory;
-    }
-
-    public void setDeployDirectory(boolean isDeployDirectory) {
-        this.isDeployDirectory = isDeployDirectory;
     }
 
     @Override

@@ -1,6 +1,6 @@
 deploy.script.dir=/ci/unpacked
 environment=qa
-install.dir=/etc/myappqa
+install.dir=/etc/qa/myapp
 
 pretty.print.xml=false
 

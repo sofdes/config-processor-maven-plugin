@@ -35,7 +35,6 @@ public class ConfigProcessorMojoTest {
     @Test
     public void testReadingDirectory() throws MojoExecutionException, MojoFailureException, IOException {
         final ConfigProcessorMojo configProcessorMojo = new ConfigProcessorMojo();
-        configProcessorMojo.deployTemplatesDirectory = "deploy";
         configProcessorMojo.templatesBasePath = getAbsolutePath("templates");
         configProcessorMojo.filtersBasePath = getAbsolutePath("filters");
         configProcessorMojo.outputBasePath = getAbsolutePath("../generated-unit-tests-config");

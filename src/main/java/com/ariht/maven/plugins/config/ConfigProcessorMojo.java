@@ -35,17 +35,13 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * For generating config files, shell and other scripts or any environment specific text files
- * that have different configuration for different environments.
+ * Generates config and scripts for multiple target environments using
+ * template placeholder substitution from values in multiple filter files.
  * <p/>
- * Files in the 'deploy' directory are a special case as they will be copied to the base of 
- * each environment so they can be used to call the functional scripts in sub-directories.
- *
- * <p/><b>Example Inputs:</b>
+ * <b>Example Inputs:</b>
  *
  * <pre>
- *   .../templates/deploy/your_deploy_script.sh
- *   .../templates/jboss/do_something.cli
+ *   .../templates/your_deploy_script.sh
  *   .../templates/properties/web-app.properties
  *   .../templates/liquibase/liquibase.properties
  *
@@ -58,17 +54,14 @@ import org.apache.maven.plugins.annotations.Parameter;
  *
  * <pre>
  *   .../env-a/your_deploy_script.sh
- *   .../env-a/jboss/do_something.cli
  *   .../env-a/properties/web-app.properties
  *   .../env-a/liquibase/liquibase.properties
  *
  *   .../env-b/your_deploy_script.sh
- *   .../env-b/jboss/do_something.cli
  *   .../env-b/properties/web-app.properties
  *   .../env-b/liquibase/liquibase.properties
  *
  *   .../env-c/your_deploy_script.sh
- *   .../env-c/jboss/do_something.cli
  *   .../env-c/properties/web-app.properties
  *   .../env-c/liquibase/liquibase.properties
  * </pre>
@@ -80,8 +73,6 @@ public class  ConfigProcessorMojo extends AbstractMojo {
 
     @Parameter (defaultValue = CharEncoding.UTF_8)
     protected String encoding;
-    @Parameter (defaultValue = "deploy")
-    protected String deployTemplatesDirectory;
     @Parameter (defaultValue = "${basedir}/src/config/templates")
     protected String templatesBasePath;
     @Parameter (defaultValue = "${basedir}/src/config/filters")
@@ -89,6 +80,7 @@ public class  ConfigProcessorMojo extends AbstractMojo {
     @Parameter (defaultValue = "${basedir}/target/generated-config")
     protected String outputBasePath;
 
+    private static final String PATH_SEPARATOR = "/";
     /**
      * For properties substituted from every filter, create config based on each template.
      */
@@ -102,14 +94,9 @@ public class  ConfigProcessorMojo extends AbstractMojo {
     }
 
     private void processTemplatesAndGenerateConfig() throws Exception {
-        getLog().info("Scanning filters directory: " + filtersBasePath);
-        final DirectoryReader filtersDirectoryReader = new DirectoryReader();
-        final List<FileInfo> filters = filtersDirectoryReader.readFiles(filtersBasePath);
-
-        getLog().info("Scanning templates directory: " + templatesBasePath);
-        final DirectoryReader templatesDirectoryReader = new DirectoryReader(deployTemplatesDirectory, true);
-        final List<FileInfo> templates = templatesDirectoryReader.readFiles(templatesBasePath);
-
+        final DirectoryReader directoryReader = new DirectoryReader(getLog());
+        final List<FileInfo> filters = directoryReader.readFiles(filtersBasePath);
+        final List<FileInfo> templates = directoryReader.readFiles(templatesBasePath);
         getLog().info("Generating: " + outputBasePath);
         for (final FileInfo filter : filters) {
             for (final FileInfo template : templates) {
@@ -155,7 +142,7 @@ public class  ConfigProcessorMojo extends AbstractMojo {
         final String outputDirectory = getOutputPath(template, filter, outputBasePath);
         final File outputDir = new File(outputDirectory);
         if (!outputDir.exists()) {
-            getLog().debug("Create : " + outputDir);
+            getLog().debug("Creating : " + outputDir);
             FileUtils.forceMkdir(outputDir);
         }
         return FilenameUtils.normalize(outputDirectory);
@@ -166,19 +153,17 @@ public class  ConfigProcessorMojo extends AbstractMojo {
      * base path so only have the filter (i.e. the environment they are intended for).
      */
     private String getOutputPath(final FileInfo template, final FileInfo filter, final String outputBasePath) {
-        final StringBuilder sb = new StringBuilder(outputBasePath + "/");
-        sb.append(filter.getRelativeSubDirectory()).append(filter.getNameWithoutExtension()).append("/");
-        if (!template.isDeployDirectory()) {
-            sb.append(template.getRelativeSubDirectory()).append("/");
-        }
-        return FilenameUtils.normalize(sb.toString());
+        final String outputPath = outputBasePath + PATH_SEPARATOR
+                                + filter.getRelativeSubDirectory()
+                                + filter.getNameWithoutExtension() + PATH_SEPARATOR
+                                + template.getRelativeSubDirectory() + PATH_SEPARATOR;
+        return FilenameUtils.normalize(outputPath);
     }
 
     private void deleteOutputDirectory() throws IOException {
-        getLog().debug("Deleting output directory " + String.valueOf(outputBasePath));
         final File outputDir = new File(outputBasePath);
         if (outputDir.exists()) {
-            getLog().debug("Delete : " + outputDir);
+            getLog().debug("Deleting : " + outputDir);
             FileUtils.forceDelete(outputDir);
         }
     }
