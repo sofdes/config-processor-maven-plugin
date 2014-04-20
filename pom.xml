@@ -4,8 +4,35 @@
     <groupId>com.ariht.maven.plugins</groupId>
     <artifactId>config-processor-maven-plugin</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>${project.groupId}:${project.artifactId}</name>
+    <name>config-processor-maven-plugin</name>
     <packaging>maven-plugin</packaging>
+    <url>https://github.com/sofdes/config-processor-maven-plugin</url>
+
+    <description>
+        Generates config and scripts for multiple target environments using
+        template placeholder substitution from values in multiple filter files.
+    </description>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/sofdes/config-processor-maven-plugin</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>david_green</id>
+            <name>David Green</name>
+            <email>david.green@softwaredesignstudio.co.uk</email>
+            <timezone>Europe/London</timezone>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -58,7 +85,6 @@
             <artifactId>commons-configuration</artifactId>
             <version>1.10</version>
         </dependency>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -1,7 +1,7 @@
 **config-processor-maven-plugin**
 
-Template placeholder substitution from values in multiple filter file, generating config for each target environments.
-
+Generates config and scripts for multiple target environments using
+template placeholder substitution from values in multiple filter files.
 
 For example the following inputs:
 
