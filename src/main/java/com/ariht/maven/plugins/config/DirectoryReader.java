@@ -25,7 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Reads directory recursively to put collated file information such as
@@ -56,10 +56,6 @@ public class DirectoryReader {
         this(null, false);
     }
 
-    public DirectoryReader(final boolean isTemplatesDirectory) {
-        this(null, isTemplatesDirectory);
-    }
-
     public DirectoryReader(final String deployTemplatesDirectory, final boolean isTemplatesDirectory) {
         if (StringUtils.isBlank(deployTemplatesDirectory)) {
             this.deployTemplatesDirectory = null;
@@ -72,20 +68,20 @@ public class DirectoryReader {
     /**
      * Read directory creating FileInfo for each file found, include sub-directories.
      */
-    public List<FileWithInfo> readFiles(final String path) throws IOException, InstantiationException, IllegalAccessException {
+    public List<FileInfo> readFiles(final String path) throws IOException, InstantiationException, IllegalAccessException {
         final File directory = new File(path);
         final Collection<File> allFiles = getAllFiles(directory);
-        final List<FileWithInfo> allFilesInfo = new ArrayList<FileWithInfo>(allFiles.size());
+        final List<FileInfo> allFilesInfo = new ArrayList<FileInfo>(allFiles.size());
         final String canonicalBaseDirectory = directory.getCanonicalPath();
         for (final File file : allFiles) {
-            final FileWithInfo fileInfo = new FileWithInfo(file);
+            final FileInfo fileInfo = new FileInfo(file);
 
             // Remove base directory to derive sub-directory
             final String canonicalFilePath = FilenameUtils.getFullPathNoEndSeparator(file.getCanonicalPath());
             final String subDirectory = FilenameUtils.normalize(StringUtils.replaceOnce(canonicalFilePath, canonicalBaseDirectory, "") + "/");
 
-            fileInfo.setBaseDirectory(canonicalBaseDirectory);
-            fileInfo.setSubDirectory(subDirectory);
+            //fileInfo.setBaseDirectory(canonicalBaseDirectory);
+            fileInfo.setRelativeSubDirectory(subDirectory);
             final boolean isDeployDirectory = isDeployDirectory(subDirectory);
             fileInfo.setDeployDirectory(isDeployDirectory);
             allFilesInfo.add(fileInfo);

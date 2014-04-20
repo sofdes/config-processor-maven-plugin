@@ -25,8 +25,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -76,7 +76,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  * @author <a href="mailto:david.green@softwaredesignstudio.co.uk">David Green</a>
  */
 @Mojo(name = "process", defaultPhase = LifecyclePhase.PROCESS_SOURCES, requiresDirectInvocation = false)
-public class ConfigProcessorMojo extends AbstractMojo {
+public class  ConfigProcessorMojo extends AbstractMojo {
 
     @Parameter (defaultValue = CharEncoding.UTF_8)
     protected String encoding;
@@ -104,15 +104,15 @@ public class ConfigProcessorMojo extends AbstractMojo {
     private void processTemplatesAndGenerateConfig() throws Exception {
         getLog().info("Scanning filters directory: " + filtersBasePath);
         final DirectoryReader filtersDirectoryReader = new DirectoryReader();
-        final List<FileWithInfo> filters = filtersDirectoryReader.readFiles(filtersBasePath);
+        final List<FileInfo> filters = filtersDirectoryReader.readFiles(filtersBasePath);
 
         getLog().info("Scanning templates directory: " + templatesBasePath);
         final DirectoryReader templatesDirectoryReader = new DirectoryReader(deployTemplatesDirectory, true);
-        final List<FileWithInfo> templates = templatesDirectoryReader.readFiles(templatesBasePath);
+        final List<FileInfo> templates = templatesDirectoryReader.readFiles(templatesBasePath);
 
         getLog().info("Generating: " + outputBasePath);
-        for (final FileWithInfo filter : filters) {
-            for (final FileWithInfo template : templates) {
+        for (final FileInfo filter : filters) {
+            for (final FileInfo template : templates) {
                 generateConfig(template, filter, outputBasePath);
             }
         }
@@ -124,7 +124,7 @@ public class ConfigProcessorMojo extends AbstractMojo {
      *
      * Typical output is to ...target/filter-sub-dir/template-dir/template.name
      */
-    private void generateConfig(final FileWithInfo template, final FileWithInfo filter, final String outputBasePath) throws IOException, ConfigurationException {
+    private void generateConfig(final FileInfo template, final FileInfo filter, final String outputBasePath) throws IOException, ConfigurationException {
         final String outputDirectory = createOutputDirectory(template, filter, outputBasePath);
         final String templateFilename = template.getFile().getName();
         final String outputFilename = FilenameUtils.separatorsToSystem(outputDirectory + templateFilename);
@@ -140,10 +140,10 @@ public class ConfigProcessorMojo extends AbstractMojo {
      * Filter files contain the properties we wish to substitute in templates.
      * Use Apache Commons Configuration to load these.
      */
-    private Properties readFilterIntoProperties(final FileWithInfo filter) throws ConfigurationException {
+    private Properties readFilterIntoProperties(final FileInfo filter) throws ConfigurationException {
         final PropertiesConfiguration config = new PropertiesConfiguration(filter.getFile());
         config.setEncoding(encoding);
-        final String filterSource = filter.getSubDirectory() + filter.getName();
+        final String filterSource = filter.getRelativeSubDirectory() + filter.getNameWithoutExtension();
         config.setProperty("filter.source", FilenameUtils.separatorsToUnix(filterSource));
         return ConfigurationConverter.getProperties(config);
     }
@@ -151,9 +151,9 @@ public class ConfigProcessorMojo extends AbstractMojo {
     /**
      * Prepare output directory: base-path/filter-sub-dir/template-dir/template.name
      */
-    private String createOutputDirectory(final FileWithInfo template, final FileWithInfo filter, final String outputBasePath) throws IOException {
+    private String createOutputDirectory(final FileInfo template, final FileInfo filter, final String outputBasePath) throws IOException {
         final String outputDirectory = getOutputPath(template, filter, outputBasePath);
-        final File outputDir = new File(outputDirectory.toString());
+        final File outputDir = new File(outputDirectory);
         if (!outputDir.exists()) {
             getLog().debug("Create : " + outputDir);
             FileUtils.forceMkdir(outputDir);
@@ -165,11 +165,11 @@ public class ConfigProcessorMojo extends AbstractMojo {
      * Concatenate together the filter's directory with the template's - 'deploy' templates just go into the 
      * base path so only have the filter (i.e. the environment they are intended for).
      */
-    private String getOutputPath(final FileWithInfo template, final FileWithInfo filter, final String outputBasePath) {
+    private String getOutputPath(final FileInfo template, final FileInfo filter, final String outputBasePath) {
         final StringBuilder sb = new StringBuilder(outputBasePath + "/");
-        sb.append(filter.getSubDirectory()).append(filter.getName()).append("/");
+        sb.append(filter.getRelativeSubDirectory()).append(filter.getNameWithoutExtension()).append("/");
         if (!template.isDeployDirectory()) {
-            sb.append(template.getSubDirectory()).append("/");
+            sb.append(template.getRelativeSubDirectory()).append("/");
         }
         return FilenameUtils.normalize(sb.toString());
     }
