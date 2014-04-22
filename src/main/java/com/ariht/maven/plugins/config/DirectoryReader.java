@@ -37,11 +37,14 @@ import org.apache.maven.plugin.logging.Log;
  */
 public class DirectoryReader {
 
-    final Log log;
+    private final Log log;
+    private final String pathSeparator;
 
-    public DirectoryReader(final Log log) {
+    public DirectoryReader(final Log log, final String pathSeparator) {
         this.log = log;
+        this.pathSeparator = pathSeparator;
     }
+
     /**
      * Read directory creating FileInfo for each file found, include sub-directories.
      */
@@ -53,12 +56,9 @@ public class DirectoryReader {
         final String canonicalBaseDirectory = directory.getCanonicalPath();
         for (final File file : allFiles) {
             final FileInfo fileInfo = new FileInfo(file);
-
             // Remove base directory to derive sub-directory
             final String canonicalFilePath = FilenameUtils.getFullPathNoEndSeparator(file.getCanonicalPath());
-            final String subDirectory = FilenameUtils.normalize(StringUtils.replaceOnce(canonicalFilePath, canonicalBaseDirectory, "") + "/");
-
-            //fileInfo.setBaseDirectory(canonicalBaseDirectory);
+            final String subDirectory = FilenameUtils.normalize(StringUtils.replaceOnce(canonicalFilePath, canonicalBaseDirectory, "") + pathSeparator);
             fileInfo.setRelativeSubDirectory(subDirectory);
             allFilesInfo.add(fileInfo);
         }

@@ -32,6 +32,10 @@ import org.junit.Test;
  */
 public class ConfigProcessorMojoTest {
 
+    /**
+     * Using example inputs in the src/test/resources directory show how the plugin
+     * processes each filter into templates.
+     */
     @Test
     public void testReadingDirectory() throws MojoExecutionException, MojoFailureException, IOException {
         final ConfigProcessorMojo configProcessorMojo = new ConfigProcessorMojo();
@@ -42,6 +46,9 @@ public class ConfigProcessorMojoTest {
         configProcessorMojo.execute();
     }
 
+    /**
+     * Given a relative path on the classpath, in this case src/tests/resources.
+     */
     private String getAbsolutePath(final String subDirectoryName) throws IOException {
         final URL resource = getClass().getResource("/");
         final String normalizedAbsolutePath = FilenameUtils.normalize(resource.getFile() + subDirectoryName);

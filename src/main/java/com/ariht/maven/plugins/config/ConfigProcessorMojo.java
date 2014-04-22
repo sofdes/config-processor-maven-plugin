@@ -37,34 +37,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 /**
  * Generates config and scripts for multiple target environments using
  * template placeholder substitution from values in multiple filter files.
- * <p/>
- * <b>Example Inputs:</b>
- *
- * <pre>
- *   .../templates/your_deploy_script.sh
- *   .../templates/properties/web-app.properties
- *   .../templates/liquibase/liquibase.properties
- *
- *   .../filters/env-a.filter
- *   .../filters/env-b.filter
- *   .../filters/env-c.filter
- * </pre>
- *
- * <p/><b>Output:</b>
- *
- * <pre>
- *   .../env-a/your_deploy_script.sh
- *   .../env-a/properties/web-app.properties
- *   .../env-a/liquibase/liquibase.properties
- *
- *   .../env-b/your_deploy_script.sh
- *   .../env-b/properties/web-app.properties
- *   .../env-b/liquibase/liquibase.properties
- *
- *   .../env-c/your_deploy_script.sh
- *   .../env-c/properties/web-app.properties
- *   .../env-c/liquibase/liquibase.properties
- * </pre>
  *
  * @author <a href="mailto:david.green@softwaredesignstudio.co.uk">David Green</a>
  */
@@ -81,6 +53,7 @@ public class  ConfigProcessorMojo extends AbstractMojo {
     protected String outputBasePath;
 
     private static final String PATH_SEPARATOR = "/";
+
     /**
      * For properties substituted from every filter, create config based on each template.
      */
@@ -94,7 +67,7 @@ public class  ConfigProcessorMojo extends AbstractMojo {
     }
 
     private void processTemplatesAndGenerateConfig() throws Exception {
-        final DirectoryReader directoryReader = new DirectoryReader(getLog());
+        final DirectoryReader directoryReader = new DirectoryReader(getLog(), PATH_SEPARATOR);
         final List<FileInfo> filters = directoryReader.readFiles(filtersBasePath);
         final List<FileInfo> templates = directoryReader.readFiles(templatesBasePath);
         getLog().debug("Outputs will go into : " + outputBasePath);
@@ -117,8 +90,8 @@ public class  ConfigProcessorMojo extends AbstractMojo {
         final String templateFilename = template.getFile().getName();
         final String outputFilename = FilenameUtils.separatorsToSystem(outputDirectory + templateFilename);
         getLog().info("Generating : " + String.valueOf(outputFilename));
-        final String rawTemplate = FileUtils.readFileToString(template.getFile());
         getLog().debug("Applying filter : " + filter.toString() + " to template : " + template.toString());
+        final String rawTemplate = FileUtils.readFileToString(template.getFile());
         final Properties properties = readFilterIntoProperties(filter);
         final String processedTemplate = StrSubstitutor.replace(rawTemplate, properties);
         FileUtils.writeStringToFile(new File(outputFilename), processedTemplate, encoding);
@@ -126,7 +99,8 @@ public class  ConfigProcessorMojo extends AbstractMojo {
 
     /**
      * Filter files contain the properties we wish to substitute in templates.
-     * Use Apache Commons Configuration to load these.
+     *
+     * Uses Apache Commons Configuration to load filters.
      */
     private Properties readFilterIntoProperties(final FileInfo filter) throws ConfigurationException {
         final PropertiesConfiguration config = new PropertiesConfiguration(filter.getFile());
