@@ -1,5 +1,13 @@
 **config-processor-maven-plugin**
 
+```
+<dependency>
+  <groupId>com.ariht</groupId>
+  <artifactId>config-processor-maven-plugin</artifactId>
+  <version>0.9.1</version>
+</dependency>
+```
+
 Generates config and scripts for multiple target environments using
 template placeholder substitution from values in multiple filter files.
 
