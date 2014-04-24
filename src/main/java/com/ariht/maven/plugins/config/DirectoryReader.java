@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -52,6 +53,9 @@ public class DirectoryReader {
         log.debug("Scanning directory: " + path);
         final File directory = new File(path);
         final Collection<File> allFiles = getAllFiles(directory);
+        if (allFiles.isEmpty()) {
+            log.warn("No files found in directory: " + path);
+        }
         final List<FileInfo> allFilesInfo = new ArrayList<FileInfo>(allFiles.size());
         final String canonicalBaseDirectory = directory.getCanonicalPath();
         for (final File file : allFiles) {
@@ -66,9 +70,10 @@ public class DirectoryReader {
     }
 
     @SuppressWarnings("rawtypes")
-    private Collection<File> getAllFiles(final File directory) throws IOException {
+    private Collection<File> getAllFiles(final File directory) {
         if (!directory.exists()) {
-            throw new IOException("Directory not found: " + String.valueOf(directory));
+            log.warn("Directory does not exist: " + directory.getPath());
+            return new LinkedList<File>();
         }
         final Collection allFiles = FileUtils.listFiles(directory, TrueFileFilter.TRUE, DirectoryFileFilter.DIRECTORY);
         final Collection<File> files = new ArrayList<File>(allFiles.size()); 

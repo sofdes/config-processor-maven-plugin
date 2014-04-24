@@ -138,7 +138,7 @@ public class  ConfigProcessorMojo extends AbstractMojo {
     }
 
     /**
-     * Concatenate together the filter's directory with the template's - 'deploy' templates just go into the 
+     * Concatenate together the filter's directory with the template's - 'deploy' templates just go into the
      * base path so only have the filter (i.e. the environment they are intended for).
      */
     private String getOutputPath(final FileInfo template, final FileInfo filter, final String outputBasePath) {
