@@ -43,6 +43,7 @@ public class ConfigProcessorMojoTest {
         configProcessorMojo.filtersBasePath = getAbsolutePath("filters");
         configProcessorMojo.outputBasePath = getAbsolutePath("../generated-unit-tests-config");
         configProcessorMojo.setLog(new TestsLogger());
+        configProcessorMojo.logOutput = true;
         configProcessorMojo.execute();
     }
 
