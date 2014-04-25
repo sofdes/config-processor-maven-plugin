@@ -4,7 +4,7 @@
 <dependency>
   <groupId>com.ariht</groupId>
   <artifactId>config-processor-maven-plugin</artifactId>
-  <version>0.9.1</version>
+  <version>0.9.2</version>
 </dependency>
 ```
 
