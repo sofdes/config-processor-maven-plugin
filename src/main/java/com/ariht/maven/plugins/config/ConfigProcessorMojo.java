@@ -41,7 +41,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  *
  * @author <a href="mailto:david.green@softwaredesignstudio.co.uk">David Green</a>
  */
-@Mojo(name = "process", defaultPhase = LifecyclePhase.PROCESS_SOURCES, requiresDirectInvocation = false)
+@Mojo(name = "process", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, requiresDirectInvocation = false)
 public class  ConfigProcessorMojo extends AbstractMojo {
 
     @Parameter (defaultValue = "${project.build.sourceEncoding}")
