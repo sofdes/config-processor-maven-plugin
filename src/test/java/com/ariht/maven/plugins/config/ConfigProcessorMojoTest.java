@@ -19,6 +19,8 @@ package com.ariht.maven.plugins.config;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -44,9 +46,8 @@ public class ConfigProcessorMojoTest {
         configProcessorMojo.outputBasePath = getAbsolutePath("../generated-unit-tests-config");
         configProcessorMojo.setLog(new TestsLogger());
         configProcessorMojo.logOutput = true;
-        configProcessorMojo.filtersToIgnore = new String[] {getAbsolutePath("filters/personal")};
-        configProcessorMojo.templatesToIgnore = new String[] {};
-
+        configProcessorMojo.filtersToIgnore = Lists.newArrayList(getAbsolutePath("filters/personal"));
+        configProcessorMojo.templatesToIgnore = Lists.newLinkedList();
         configProcessorMojo.execute();
     }
 

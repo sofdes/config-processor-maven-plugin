@@ -56,9 +56,9 @@ public class  ConfigProcessorMojo extends AbstractMojo {
     @Parameter (defaultValue = "true")
     protected boolean logOutput;
     @Parameter
-    protected String[] templatesToIgnore;
+    protected List<String> templatesToIgnore;
     @Parameter
-    protected String[] filtersToIgnore;
+    protected List<String> filtersToIgnore;
 
     private static final String PATH_SEPARATOR = "/";
 

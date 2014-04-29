@@ -28,7 +28,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.maven.plugin.logging.Log;
@@ -46,7 +45,7 @@ public class DirectoryReader {
     private final String pathSeparator;
     private final List<File> filesToIgnore;
 
-    public DirectoryReader(final Log log, final String pathSeparator, final String[] filenamesToIgnore) {
+    public DirectoryReader(final Log log, final String pathSeparator, final List<String> filenamesToIgnore) {
         this.log = log;
         this.pathSeparator = pathSeparator;
         this.filesToIgnore = processFilesToIgnore(filenamesToIgnore);
@@ -114,12 +113,12 @@ public class DirectoryReader {
         return files;
     }
 
-    /**
-     * Null-safe conversion of array to collection of files
-     */
-    private List<File> processFilesToIgnore(final String[] filesToIgnore) {
+    private List<File> processFilesToIgnore(final List<String> filesToIgnore) {
         final List<File> templatesIgnored = Lists.newLinkedList();
-        for (String templateToIgnore : Sets.newTreeSet(Lists.newArrayList(ArrayUtils.nullToEmpty(filesToIgnore)))) {
+        if (filesToIgnore == null || filesToIgnore.isEmpty()) {
+            return templatesIgnored;
+        }
+        for (String templateToIgnore : Sets.newTreeSet(filesToIgnore)) {
             if (StringUtils.isNotBlank(templateToIgnore)) {
                 templateToIgnore = FilenameUtils.separatorsToSystem(FilenameUtils.normalize(templateToIgnore));
                 final File file = new File(templateToIgnore);
