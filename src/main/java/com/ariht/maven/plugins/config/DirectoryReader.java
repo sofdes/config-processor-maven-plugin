@@ -20,13 +20,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.maven.plugin.logging.Log;
 
 /**
@@ -40,10 +44,24 @@ public class DirectoryReader {
 
     private final Log log;
     private final String pathSeparator;
+    private final List<File> filesToIgnore;
 
-    public DirectoryReader(final Log log, final String pathSeparator) {
+    public DirectoryReader(final Log log, final String pathSeparator, final String[] filenamesToIgnore) {
         this.log = log;
         this.pathSeparator = pathSeparator;
+        this.filesToIgnore = processFilesToIgnore(filenamesToIgnore);
+    }
+
+    private boolean isFileToIgnore(File file) {
+        for (File f : filesToIgnore) {
+            if (StringUtils.startsWith(file.getAbsolutePath(), f.getAbsolutePath())) {
+                log.debug("Matched prefix so will ignore: \n" + file.getAbsolutePath() + "\n" + f.getAbsolutePath());
+                return true;
+            } else {
+                log.debug("Not same: \n" + file.getAbsolutePath() + "\n" + f.getAbsolutePath());
+            }
+        }
+        return false;
     }
 
     /**
@@ -71,20 +89,46 @@ public class DirectoryReader {
 
     @SuppressWarnings("rawtypes")
     private Collection<File> getAllFiles(final File directory) {
+        final Collection<File> files = Lists.newLinkedList();
         if (!directory.exists()) {
             log.warn("Directory does not exist: " + directory.getPath());
-            return new LinkedList<File>();
+            return files;
         }
         final Collection allFiles = FileUtils.listFiles(directory, TrueFileFilter.TRUE, DirectoryFileFilter.DIRECTORY);
-        final Collection<File> files = new ArrayList<File>(allFiles.size()); 
-        for (final Object f : allFiles) {
-            if (f == null) {
+        for (final Object o : allFiles) {
+            if (o == null) {
                 continue;
             }
-            log.debug("Adding file: " + f.toString());
-            files.add((File) f);
+            if (o instanceof File) {
+                final File file = (File) o;
+                if (isFileToIgnore(file)) {
+                    log.info("Ignoring: " + file.toString());
+                } else {
+                    log.debug("Adding file: " + file.toString());
+                    files.add(file);
+                }
+            } else {
+                log.warn("Not a file: " + ToStringBuilder.reflectionToString(o));
+            }
         }
         return files;
     }
 
+    /**
+     * Null-safe conversion of array to collection of files
+     */
+    private List<File> processFilesToIgnore(final String[] filesToIgnore) {
+        final List<File> templatesIgnored = Lists.newLinkedList();
+        for (String templateToIgnore : Sets.newTreeSet(Lists.newArrayList(ArrayUtils.nullToEmpty(filesToIgnore)))) {
+            if (StringUtils.isNotBlank(templateToIgnore)) {
+                templateToIgnore = FilenameUtils.separatorsToSystem(FilenameUtils.normalize(templateToIgnore));
+                final File file = new File(templateToIgnore);
+                if (file.exists()) {
+                    log.debug("Adding ignore for file: " + file.getAbsolutePath());
+                    templatesIgnored.add(file);
+                }
+            }
+        }
+        return templatesIgnored;
+    }
 }

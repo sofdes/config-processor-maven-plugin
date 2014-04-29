@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Properties;
+
 import org.apache.commons.configuration.ConfigurationConverter;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -54,6 +55,10 @@ public class  ConfigProcessorMojo extends AbstractMojo {
     protected String outputBasePath;
     @Parameter (defaultValue = "true")
     protected boolean logOutput;
+    @Parameter
+    protected String[] templatesToIgnore;
+    @Parameter
+    protected String[] filtersToIgnore;
 
     private static final String PATH_SEPARATOR = "/";
 
@@ -71,9 +76,8 @@ public class  ConfigProcessorMojo extends AbstractMojo {
     }
 
     private void processTemplatesAndGenerateConfig() throws Exception {
-        final DirectoryReader directoryReader = new DirectoryReader(getLog(), PATH_SEPARATOR);
-        final List<FileInfo> filters = directoryReader.readFiles(filtersBasePath);
-        final List<FileInfo> templates = directoryReader.readFiles(templatesBasePath);
+        final List<FileInfo> filters = new DirectoryReader(getLog(), PATH_SEPARATOR, filtersToIgnore).readFiles(filtersBasePath);
+        final List<FileInfo> templates = new DirectoryReader(getLog(), PATH_SEPARATOR, templatesToIgnore).readFiles(templatesBasePath);
         getLog().debug("Outputs will go into : " + outputBasePath);
         for (final FileInfo filter : filters) {
             getLog().info("");

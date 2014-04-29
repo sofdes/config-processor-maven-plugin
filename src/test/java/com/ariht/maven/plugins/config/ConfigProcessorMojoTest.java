@@ -44,6 +44,9 @@ public class ConfigProcessorMojoTest {
         configProcessorMojo.outputBasePath = getAbsolutePath("../generated-unit-tests-config");
         configProcessorMojo.setLog(new TestsLogger());
         configProcessorMojo.logOutput = true;
+        configProcessorMojo.filtersToIgnore = new String[] {getAbsolutePath("filters/personal")};
+        configProcessorMojo.templatesToIgnore = new String[] {};
+
         configProcessorMojo.execute();
     }
 
