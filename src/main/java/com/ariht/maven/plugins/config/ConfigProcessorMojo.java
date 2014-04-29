@@ -165,7 +165,7 @@ public class  ConfigProcessorMojo extends AbstractMojo {
         if (StringUtils.isBlank(encoding)) {
             encoding = System.getProperty("file.encoding");
             getLog().warn("File encoding has not been set, using platform encoding '" + encoding
-                    + "', i.e. build is platform dependent!");
+                    + "', i.e. generated config is platform dependent!");
         } else if (logOutput) {
             getLog().info("Using '" + encoding + "' to filter config templates.");
         }
