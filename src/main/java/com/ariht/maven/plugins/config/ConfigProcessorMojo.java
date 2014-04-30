@@ -39,8 +39,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 /**
  * Generates config and scripts for multiple target environments using
  * template placeholder substitution from values in multiple filter files.
- *
- * @author <a href="mailto:david.green@softwaredesignstudio.co.uk">David Green</a>
  */
 @Mojo(name = "process", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, requiresDirectInvocation = false)
 public class  ConfigProcessorMojo extends AbstractMojo {
@@ -66,6 +64,7 @@ public class  ConfigProcessorMojo extends AbstractMojo {
      * For properties substituted from every filter, create config based on each template.
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
+        getLog().warn("This plugin has moved to new artifactId: config-generation-maven-plugin");
         try {
             logConfigurationParameters();
             deleteOutputDirectory();
@@ -167,7 +166,7 @@ public class  ConfigProcessorMojo extends AbstractMojo {
             getLog().warn("File encoding has not been set, using platform encoding '" + encoding
                     + "', i.e. generated config is platform dependent!");
         } else if (logOutput) {
-            getLog().info("Using '" + encoding + "' to filter config templates.");
+            getLog().info("Using file encoding '" + encoding + "' while generating config.");
         }
         if (logOutput) {
             getLog().info(MessageFormat.format("templatesBasePath : {0}", FilenameUtils.separatorsToSystem(templatesBasePath)));

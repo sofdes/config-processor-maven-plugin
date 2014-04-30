@@ -22,8 +22,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Maven Plugin Log implementation using slf4j Logger underneath.
- *
- * @author <a href="mailto:david.green@softwaredesignstudio.co.uk">David Green</a>
  */
 public class TestsLogger implements Log {
 

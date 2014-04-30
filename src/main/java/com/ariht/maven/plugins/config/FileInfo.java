@@ -24,8 +24,6 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /**
  * Container to information about a file so that the processors can input and output
  * relative paths and filenames easily as they've already been determined and placed here.
- *
- * @author <a href="mailto:david.green@softwaredesignstudio.co.uk">David Green</a>
  */
 public class FileInfo {
 

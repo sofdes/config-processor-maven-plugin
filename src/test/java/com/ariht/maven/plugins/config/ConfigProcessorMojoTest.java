@@ -29,8 +29,6 @@ import org.junit.Test;
 
 /**
  * Not so much a unit test as an example showing filters and templates being processed together.
- *
- * @author <a href="mailto:david.green@softwaredesignstudio.co.uk">David Green</a>
  */
 public class ConfigProcessorMojoTest {
 

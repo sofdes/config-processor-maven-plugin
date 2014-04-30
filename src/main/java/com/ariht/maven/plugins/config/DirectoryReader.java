@@ -35,9 +35,6 @@ import org.apache.maven.plugin.logging.Log;
 /**
  * Reads directory recursively to put collated file information such as
  * relative paths, name (without extension) and a reference to the {@link File} itself.
- * <p/>
- *
- * @author <a href="mailto:david.green@softwaredesignstudio.co.uk">David Green</a>
  */
 public class DirectoryReader {
 
